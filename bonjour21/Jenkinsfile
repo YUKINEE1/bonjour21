@@ -2,27 +2,31 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_IMAGE = "moncompte/bonjour21:latest"  // Change ton repo Docker
+        DOCKER_IMAGE = "charifray/bonjour21:${env.BUILD_NUMBER}"  // Change ton repo Docker
         DOCKER_REGISTRY = "docker.io"                // ou autre registre
     }
 
     stages {
         stage('Checkout') {
             steps {
-                git branch: 'main', url: 'https://github.com/tonrepo/bonjour21.git'
+                git branch: 'main', url: 'https://github.com/YUKINEE1/bonjour21.git', credentialsId: 'f2010422-68a8-41e1-8fa7-657b275121ad'
             }
         }
 
         stage('Build Maven') {
             steps {
+                dir('bonjour21'){
                 sh 'mvn clean package -DskipTests'
-            }
+                }
+                }
         }
 
         stage('Build Docker Image') {
             steps {
+                dir('bonjour21'){
                 sh "docker build -t ${DOCKER_IMAGE} ."
-            }
+                }
+                }
         }
 
         stage('Push Docker Image') {
