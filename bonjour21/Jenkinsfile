@@ -1,0 +1,50 @@
+pipeline {
+    agent any
+
+    environment {
+        DOCKER_IMAGE = "moncompte/bonjour21:latest"  // Change ton repo Docker
+        DOCKER_REGISTRY = "docker.io"                // ou autre registre
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                git branch: 'main', url: 'https://github.com/tonrepo/bonjour21.git'
+            }
+        }
+
+        stage('Build Maven') {
+            steps {
+                sh 'mvn clean package -DskipTests'
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                sh "docker build -t ${DOCKER_IMAGE} ."
+            }
+        }
+
+        stage('Push Docker Image') {
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'dockerhub-credentials', usernameVariable: 'USER', passwordVariable: 'PASS')]) {
+                    sh "echo $PASS | docker login ${DOCKER_REGISTRY} -u $USER --password-stdin"
+                    sh "docker push ${DOCKER_IMAGE}"
+                }
+            }
+        }
+
+        stage('Deploy (optional)') {
+            steps {
+                echo "Déploiement possible sur Kubernetes ou serveur distant"
+                // Exemple : kubectl set image deployment/bonjour21 bonjour21=moncompte/bonjour21:latest
+            }
+        }
+    }
+
+    post {
+        always {
+            cleanWs()  // Nettoie le workspace
+        }
+    }
+}
