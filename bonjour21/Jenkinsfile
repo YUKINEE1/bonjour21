@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_IMAGE = "charifray/bonjour21:${BUILD_NUMBER}" // Utilisation correcte de ${BUILD_NUMBER}
+        DOCKER_IMAGE = "charifray/bonjour21:${BUILD_NUMBER}" // Utilisation correcte de la variable BUILD_NUMBER
         DOCKER_REGISTRY = "docker.io" // ou autre registre
     }
 
@@ -18,8 +18,10 @@ pipeline {
         stage('Build Maven') {
             steps {
                 dir('bonjour21') {
-                    docker.image('maven:3.9.2-openjdk-17').inside {
-                        sh 'mvn clean package -DskipTests'
+                    script {
+                        docker.image('maven:3.9.2-openjdk-17').inside {
+                            sh 'mvn clean package -DskipTests'
+                        }
                     }
                 }
             }
