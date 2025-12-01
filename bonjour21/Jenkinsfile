@@ -17,10 +17,12 @@ pipeline {
 
         stage('Build Maven') {
             steps {
-                script {
-                    
+                
+                    dir('bonjour21'){
                         sh 'mvn clean package -DskipTests'
+                    
                     }
+                
                 }
             
         }
