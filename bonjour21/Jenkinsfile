@@ -18,13 +18,11 @@ pipeline {
         stage('Build Maven') {
             steps {
                 script {
-                    docker.image('maven:3.9.2-openjdk-17').inside(
-                        "-v $WORKSPACE:/workspace -w /workspace/bonjour21"
-                    ) {
+                    
                         sh 'mvn clean package -DskipTests'
                     }
                 }
-            }
+            
         }
 
         stage('Build Docker Image') {
